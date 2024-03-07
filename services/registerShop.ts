@@ -1,6 +1,8 @@
-const userDb = require("../db/user.registerModel");
-const registerShop = require("../db/shop.registerModel");
-const registerShopController = async (req, res) => {
+import userDb from "../models/user.registerModel"
+import registerShop from "../models/shop.registerModel"
+import { Request, Response } from "express";
+
+const registerShopController = async (req: Request, res: Response) => {
   const { shopName, theme, email } = req.body;
 
   const owner = await userDb.findOne({ email: email });

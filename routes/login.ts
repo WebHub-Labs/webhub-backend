@@ -1,17 +1,19 @@
-const express = require("express");
-const userRegisterModel = require("../db/user.registerModel");
-const jwt = require("jsonwebtoken");
+import express from "express"
+import userRegisterModel from "../models/user.registerModel"
+import jwt from "jsonwebtoken"
 const loginRouter = express.Router();
 
 loginRouter.post("/", async (req, res) => {
   try {
     console.log(req.body)
-    const {  user_email } = req.body;
+    const { user_email } = req.body;
     if (req.body.user_email && req.body.user_password) {
       const user = await userRegisterModel.findOne({
         email: user_email,
       });
-      !user && res.status(400).json("wrong credentials");
+      if (!user) {
+        return res.status(400).json("wrong credentials");
+      }
 
       const isPasswordMatched = req.body.user_password === user.password;
       !isPasswordMatched && res.status(400).json("wrong credentials");
@@ -20,8 +22,7 @@ loginRouter.post("/", async (req, res) => {
         expiresIn: "3d",
       });
 
-      console.log(user._doc);
-      const { password, ...rest } = user._doc;
+      const { password, ...rest } = user;
 
       res.status(200).json({ ...rest, token });
     } else {
@@ -32,4 +33,4 @@ loginRouter.post("/", async (req, res) => {
     res.status(500).json(error);
   }
 });
-module.exports = loginRouter;
+export default loginRouter;

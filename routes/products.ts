@@ -1,5 +1,5 @@
-const express = require("express");
-const Product = require("../db/productModel");
+import express from "express"
+import Product from "../models/productModel"
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {

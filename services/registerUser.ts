@@ -1,8 +1,9 @@
-const shopRegisterModel = require("../db/shop.registerModel");
-const registerUser = require("../db/user.registerModel");
-const userRegisterModel = require("../db/user.registerModel");
+import shopRegisterModel from "../models/shop.registerModel"
+import registerUser from "../models/user.registerModel"
+import userRegisterModel from "../models/user.registerModel"
+import { Request, Response } from "express";
 
-const registerUserController = async (req, res) => {
+const registerUserController = async (req: Request, res: Response) => {
   const { shopName, theme } = req.body;
   const { user_fullname, user_phNo, user_email, user_password } = req.body;
 
