@@ -1,5 +1,4 @@
 const express = require("express");
-const registerShopController = require("../controller/registerShop");
 const shopRegisterModel = require("../db/shop.registerModel");
 const userRegisterModel = require("../db/user.registerModel");
 const router = express.Router();
@@ -12,4 +11,4 @@ router.get("/", async (req, res) => {
     .populate("owner");
 });
 
-module.exports = router;
+export default router;
