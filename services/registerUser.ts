@@ -3,7 +3,7 @@ import registerUser from "../models/user.registerModel"
 import userRegisterModel from "../models/user.registerModel"
 import { Request, Response } from "express";
 
-const registerUserController = async (req: Request, res: Response) => {
+export async function registerUserController(req: Request, res: Response) {
   const { shopName, theme } = req.body;
   const { user_fullname, user_phNo, user_email, user_password } = req.body;
 
@@ -50,5 +50,3 @@ const registerUserController = async (req: Request, res: Response) => {
       });
   }
 };
-
-module.exports = registerUserController;

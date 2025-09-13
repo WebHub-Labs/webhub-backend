@@ -1,36 +1,43 @@
-import express from "express"
-import userRegisterModel from "../models/user.registerModel"
-import jwt from "jsonwebtoken"
+import express from "express";
+import userRegisterModel from "../models/user.registerModel";
+import jwt from "jsonwebtoken";
+import config from "../config";
+import { validate, userLoginSchema } from "../validation/schemas";
+import { asyncHandler, AppError } from "../utils/errorHandler";
+
 const loginRouter = express.Router();
 
-loginRouter.post("/", async (req, res) => {
-  try {
-    console.log(req.body)
-    const { user_email } = req.body;
-    if (req.body.user_email && req.body.user_password) {
-      const user = await userRegisterModel.findOne({
-        email: user_email,
-      });
-      if (!user) {
-        return res.status(400).json("wrong credentials");
-      }
+loginRouter.post("/", validate(userLoginSchema), asyncHandler(async (req, res) => {
+  const { user_email, user_password } = req.body;
 
-      const isPasswordMatched = req.body.user_password === user.password;
-      !isPasswordMatched && res.status(400).json("wrong credentials");
-
-      const token = jwt.sign({ id: user._id }, process.env.PWD_SECRET, {
-        expiresIn: "3d",
-      });
-
-      const { password, ...rest } = user;
-
-      res.status(200).json({ ...rest, token });
-    } else {
-      throw Error("Not valid fields");
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
+  // Find user by email
+  const user = await userRegisterModel.findOne({ email: user_email });
+  if (!user) {
+    throw new AppError("Invalid email or password", 401);
   }
-});
+
+  // Check password
+  const isPasswordValid = await user.comparePassword(user_password);
+  if (!isPasswordValid) {
+    throw new AppError("Invalid email or password", 401);
+  }
+
+  // Generate JWT token
+  const token = jwt.sign({ id: user._id }, config.jwtSecret, {
+    expiresIn: config.jwtExpiresIn,
+  });
+
+  // Remove password from response
+  const { password, ...userWithoutPassword } = user.toObject();
+
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    data: {
+      user: userWithoutPassword,
+      token
+    }
+  });
+}));
+
 export default loginRouter;

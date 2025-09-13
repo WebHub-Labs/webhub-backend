@@ -2,7 +2,7 @@ import userDb from "../models/user.registerModel"
 import registerShop from "../models/shop.registerModel"
 import { Request, Response } from "express";
 
-const registerShopController = async (req: Request, res: Response) => {
+export async function registerShopController(req: Request, res: Response) {
   const { shopName, theme, email } = req.body;
 
   const owner = await userDb.findOne({ email: email });
@@ -21,7 +21,6 @@ const registerShopController = async (req: Request, res: Response) => {
       res.send("err");
     }
   } else {
-    res.send("err shop already exists or you havent registered");
+    res.send("Err Shop already exists or you havent registered");
   }
 };
-module.exports = registerShopController;
